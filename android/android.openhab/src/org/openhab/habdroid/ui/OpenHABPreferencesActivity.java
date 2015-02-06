@@ -43,6 +43,10 @@ import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
 
 /**
  * This is a class to provide preferences activity for application.
@@ -59,6 +63,7 @@ public class OpenHABPreferencesActivity extends PreferenceActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    addPreferencesFromResource(R.xml.preferences);
+	    
 	    Preference roomPreference = getPreferenceScreen().findPreference("room_setting");
 	    
 	    roomPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -85,7 +90,24 @@ public class OpenHABPreferencesActivity extends PreferenceActivity {
 				return true;
 			}
 		});
+	    
+	    this.getActionBar().setHomeButtonEnabled(true);
 	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case android.R.id.home:
+        	Intent intent = new Intent(this.getApplicationContext(), OpenHABWidgetListActivity.class);
+    		startActivity(intent);
+    		finish();
+            return true;
+        default:
+    		return super.onOptionsItemSelected(item);
+    	}
+	}
+	
+	
 	
 	
 }

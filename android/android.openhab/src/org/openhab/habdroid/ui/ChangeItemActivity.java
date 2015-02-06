@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import org.openhab.habdroid.R;
 import org.openhab.habdroid.model.OpenHABWidget;
 import org.openhab.habdroid.util.MyAsyncHttpClient;
+import org.openhab.habdroid.util.Utils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -175,8 +178,10 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 //			&iid=0000_1
 //			&pid=default_0
 //			&name=abc%E4%B8%AD%E6%96%87de
-		
-		String url = "http://192.168.18.5:8080/config";
+		SharedPreferences settings = 
+				PreferenceManager.getDefaultSharedPreferences(this);
+		String manualUrl = Utils.normalizeUrl(settings.getString("default_openhab_url", ""));
+		String url = manualUrl + "config";
 		
 		MyAsyncHttpClient asyncHttpClient = new MyAsyncHttpClient();
 		asyncHttpClient.setBasicAuthCredientidals(null, null);

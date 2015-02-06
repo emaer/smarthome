@@ -39,7 +39,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.http.Header;
 import org.openhab.habdroid.R;
 import org.openhab.habdroid.model.OpenHABPage;
 import org.openhab.habdroid.model.OpenHABSitemap;
@@ -126,8 +125,6 @@ public class OpenHABWidgetListActivity extends ListActivity {
 		
 	}
 	
-	
-	
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
@@ -195,8 +192,10 @@ public class OpenHABWidgetListActivity extends ListActivity {
 	
 	private void refresh(){
 		
-		if(isAlteredSiteUrl()){
-			
+		if (displayPageUrl.length() > 0) {
+			Log.i(TAG, "displayPageUrl = " + displayPageUrl);
+			showPage(displayPageUrl, false);
+		} else{
 			widgetList.clear();
 			openHABWidgetAdapter.notifyDataSetChanged();
 			
@@ -209,17 +208,33 @@ public class OpenHABWidgetListActivity extends ListActivity {
 			} else {
 				Log.i(TAG, "No base URL!");
 			}
-			
-		}else{
-			
-			// If yes, then just show it
-			if (displayPageUrl.length() > 0) {
-				Log.i(TAG, "displayPageUrl = " + displayPageUrl);
-				showPage(displayPageUrl, false);
-			// Else check if we got openHAB base url through launch intent?
-			} 
-			
 		}
+		
+//		if(isAlteredSiteUrl()){
+//			
+//			widgetList.clear();
+//			openHABWidgetAdapter.notifyDataSetChanged();
+//			
+//			SharedPreferences settings = 
+//					PreferenceManager.getDefaultSharedPreferences(this);
+//			openHABBaseUrl = Utils.normalizeUrl(settings.getString("default_openhab_url", ""));
+//			if (openHABBaseUrl != null && openHABBaseUrl.length() != 0) {
+//				openHABWidgetAdapter.setOpenHABBaseUrl(openHABBaseUrl);
+//				selectSitemap(openHABBaseUrl, false);
+//			} else {
+//				Log.i(TAG, "No base URL!");
+//			}
+//			
+//		}else{
+//			
+//			// If yes, then just show it
+//			if (displayPageUrl.length() > 0) {
+//				Log.i(TAG, "displayPageUrl = " + displayPageUrl);
+//				showPage(displayPageUrl, false);
+//			// Else check if we got openHAB base url through launch intent?
+//			} 
+//			
+//		}
 		
 	}
 	
@@ -245,10 +260,11 @@ public class OpenHABWidgetListActivity extends ListActivity {
      * @param  longPolling  enable long polling when loading page
      * @return      void
      */
-	public void showPage(String pageUrl, boolean longPolling) {
+	public void showPage(final String pageUrl, boolean longPolling) {
 		Log.i(TAG, "showPage for " + pageUrl + " longPolling = " + longPolling);
 		// Cancel any existing http request to openHAB (typically ongoing long poll)
 		if (pageAsyncHttpClient != null) {
+			stopProgressIndicator();
 			pageAsyncHttpClient.cancelRequests(this, true);
 		}
 		pageAsyncHttpClient = new MyAsyncHttpClient();
@@ -261,14 +277,20 @@ public class OpenHABWidgetListActivity extends ListActivity {
 			pageAsyncHttpClient.addHeader("Accept", "application/xml");
 			pageAsyncHttpClient.setTimeout(30000);
 		}
+		
+		startProgressIndicator();
+		
 		pageAsyncHttpClient.get(this, pageUrl, new AsyncHttpResponseHandler() {
 			@Override
-			public void onSuccess(String content) {;
+			public void onSuccess(String content) {
+				
+				Log.d(TAG, "showPage:" + pageUrl + " success");
+				stopProgressIndicator();
 				processContent(content);
 			}
 			@Override
 		     public void onFailure(Throwable e) {
-				Log.i(TAG, "http request failed");
+				Log.d(TAG, "showPage:" + pageUrl + " failed");
 				if (e.getMessage() != null) {
 					Log.e(TAG, e.getMessage());
 					if (e.getMessage().equals("Unauthorized")) {
@@ -490,6 +512,10 @@ public class OpenHABWidgetListActivity extends ListActivity {
 
 	private void stopProgressIndicator() {
 		setProgressBarIndeterminateVisibility(false);
+	}
+	
+	private void startProgressIndicator() {
+		setProgressBarIndeterminateVisibility(true);
 	}
 	
 	private boolean sitemapExists(List<OpenHABSitemap> sitemapList, String sitemapName) {
