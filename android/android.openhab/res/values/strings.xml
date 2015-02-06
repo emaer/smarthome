@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SmartHome</string>
+    <string name="app_preferences_name">Settings</string>
+    <string name="mainmenu_openhab_settings">设置</string>
+    <string name="mainmenu_openhab_preferences">Settings</string>
+    <string name="mainmenu_openhab_selectsitemap">Select sitemap</string>
+    <string name="settings_title">HABDroid Settings</string>
+    <!-- <string name="settings_openhab_url">openHAB URL</string> -->
+    <!-- <string name="settings_openhab_url_summary">Manually configured openHAB URL</string> -->
+    <string name="settings_openhab_url">服务器地址</string>
+    <string name="settings_openhab_url_summary">修改服务器地址</string>
+    
+    <string name="settings_default_openhab_url_value">http://localhost/</string>
+    
+    <string name="settings_openhab_alturl">openHAB Remote URL</string>
+    <string name="settings_openhab_alturl_summary">Remote openHAB URL</string>
+    <string name="settings_openhab_username">Username</string>
+    <string name="settings_openhab_username_summary">openHAB username</string>
+    <string name="settings_openhab_password">Password</string>
+    <string name="settings_openhab_password_summary">openHAB password</string>
+    <string name="info_conn_url">Connecting to configured URL</string>
+    <string name="info_conn_rem_url">Connecting to remote URL</string>
+    <string name="error_no_url">Please configure openHAB URL or remote URL</string>
+    <string name="error_authentication_failed">Authentication Failed. Please check Username/Password settings</string>
+    <string name="error_empty_sitemap_list">openHAB returned empty sitemap list</string>
+    <string name="error_network_not_available">Network is not available</string>
+    <string name="error_no_uuid">Unable to get openHAB UUID, connection failed</string>
+    <string name="erorr_invalid_url">Please enter a valid URL in a \'protocol://host:port/\' form</string>
+    
+    <string name="settings_room_title">房间管理</string>
+    <string name="settings_room_summary">可以修改房间名称</string>
+    <!-- <string name="settings_room_title">房间管理</string>
+    <string name="settings_room_title">房间管理</string> -->
+    
+    <string name="done">完成</string>
+    <string name="ok">确定</string>
+    <string name="goback">返回</string>
+    
+    
+</resources>

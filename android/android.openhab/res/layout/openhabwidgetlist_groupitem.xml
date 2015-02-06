@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <org.openhab.habdroid.util.MySmartImageView
+        android:id="@+id/groupimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:maxHeight="50dip"
+        android:maxWidth="50dip"
+        android:minHeight="50dip"
+        android:minWidth="50dip"
+        android:paddingBottom="6dip"
+        android:paddingTop="6dip" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/groupimage"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/grouplabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/groupvalue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RelativeLayout>
+    
+    <ImageView 
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editimg"
+        android:visibility="gone"
+        android:src="@drawable/room_edit"/>
+
+    <LinearLayout
+        android:id="@+id/listdivider"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_below="@+id/groupimage"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:background="?android:attr/listDivider"
+        android:orientation="horizontal" />
+
+</RelativeLayout>
