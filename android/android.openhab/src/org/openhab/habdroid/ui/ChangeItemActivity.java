@@ -185,9 +185,6 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 			Toast.makeText(this, "«Î ‰»Î√˚≥∆", Toast.LENGTH_LONG).show();
 			return;
 		}
-		//http://localhost:8080/config?
-		//url=http%3A//localhost%3A8080/rest/sitemaps/default/default
-		//&name=abc%E6%B5%8B%E8%AF%95de&itemid=0000_1&type=remane
 		
 //		http://localhost:8080/config?
 //			uri=http%3A//localhost%3A8080/rest/sitemaps/default/default
