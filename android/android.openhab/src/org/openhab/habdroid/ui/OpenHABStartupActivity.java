@@ -31,6 +31,7 @@ package org.openhab.habdroid.ui;
 
 import javax.jmdns.ServiceInfo;
 
+import org.apache.http.Header;
 import org.openhab.habdroid.R;
 import org.openhab.habdroid.util.AsyncServiceResolver;
 import org.openhab.habdroid.util.AsyncServiceResolverListener;
@@ -139,13 +140,15 @@ public class OpenHABStartupActivity extends Activity implements AsyncServiceReso
 		asyncHttpClient.get(openHABBaseUrl + "static/uuid", new AsyncHttpResponseHandler() {
 			
 			@Override
-			public void onFailure(Throwable e) {
+			public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e){
 				Toast.makeText(getApplicationContext(), "@string/error_no_uuid",
 						Toast.LENGTH_LONG).show();
 				
 			}
 			@Override
-			public void onSuccess(String content) {
+			public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+				// TODO Auto-generated method stub
+				final String content = new String(response);	
 				// TODO Auto-generated method stub
 				Log.i(TAG, "Got openHAB UUID = " + content);
 				SharedPreferences settings = 
@@ -171,6 +174,7 @@ public class OpenHABStartupActivity extends Activity implements AsyncServiceReso
 					startListActivity(openHABBaseUrl);
 				}
 			}
+			
 		});
 	}
 

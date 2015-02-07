@@ -336,10 +336,23 @@ public class OpenHABWidgetSettingsAdapter extends ArrayAdapter<OpenHABWidget> {
     
     private void sendItemCommand(OpenHABItem item, String command) {
 		MyAsyncHttpClient asyncHttpClient = new MyAsyncHttpClient();
-		asyncHttpClient.setBasicAuthCredientidals(openHABUsername, openHABPassword);
+		asyncHttpClient.setBasicAuth(openHABUsername, openHABPassword);
 		try {
 			StringEntity se = new StringEntity(command);
-			asyncHttpClient.post(null, item.getLink(), se, "text/plain", new AsyncHttpResponseHandler());
+			asyncHttpClient.post(null, item.getLink(), se, "text/plain", new AsyncHttpResponseHandler(){
+
+				@Override
+				public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+						Throwable arg3) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+					// TODO Auto-generated method stub
+					
+				}});
 		} catch (UnsupportedEncodingException e) {
 		}
     }

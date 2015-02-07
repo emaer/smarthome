@@ -126,8 +126,8 @@ public class OpenHABRoomSettingActivity extends ListActivity implements ListItem
 		res = this.getApplicationContext().getResources();
 		
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		openHABUsername = settings.getString("default_openhab_username", null);
-		openHABPassword = settings.getString("default_openhab_password", null);
+		openHABUsername = settings.getString("default_openhab_username", "");
+		openHABPassword = settings.getString("default_openhab_password", "");
 		openHABWidgetDataSource = new OpenHABWidgetDataSource();
 		openHABWidgetAdapter = new OpenHABWidgetSettingsAdapter(OpenHABRoomSettingActivity.this,
 				R.layout.openhabwidgetlist_genericitem, widgetList, this);
@@ -244,7 +244,7 @@ public class OpenHABRoomSettingActivity extends ListActivity implements ListItem
 		}
 		pageAsyncHttpClient = new MyAsyncHttpClient();
 		// If authentication is needed
-		pageAsyncHttpClient.setBasicAuthCredientidals(openHABUsername, openHABPassword);
+		pageAsyncHttpClient.setBasicAuth(openHABUsername, openHABPassword);
 		// If long-polling is needed
 		if (longPolling) {
 			// Add corresponding fields to header to make openHAB know we need long-polling
@@ -254,11 +254,13 @@ public class OpenHABRoomSettingActivity extends ListActivity implements ListItem
 		}
 		pageAsyncHttpClient.get(this, pageUrl, new AsyncHttpResponseHandler() {
 			@Override
-			public void onSuccess(String content) {				
+			public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+				// TODO Auto-generated method stub
+				final String content = new String(response);			
 				processContent(content);
 			}
 			@Override
-		     public void onFailure(Throwable e) {
+			public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e){
 				Log.i(TAG, "http request failed");
 				if (e.getMessage() != null) {
 					Log.e(TAG, e.getMessage());
@@ -391,10 +393,12 @@ public class OpenHABRoomSettingActivity extends ListActivity implements ListItem
 		Log.i(TAG, "Loding sitemap list from " + baseURL + "rest/sitemaps");
 	    AsyncHttpClient asyncHttpClient = new MyAsyncHttpClient();
 		// If authentication is needed
-	    asyncHttpClient.setBasicAuthCredientidals(openHABUsername, openHABPassword);
+	    asyncHttpClient.setBasicAuth(openHABUsername, openHABPassword);
 	    asyncHttpClient.get(baseURL + "rest/sitemaps", new AsyncHttpResponseHandler() {
-			@Override
-			public void onSuccess(String content) {
+	    	@Override
+			public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+				// TODO Auto-generated method stub
+				final String content = new String(response);
 				List<OpenHABSitemap> sitemapList = parseSitemapList(content);
 				if (sitemapList.size() == 0) {
 					// Got an empty sitemap list!
@@ -447,7 +451,7 @@ public class OpenHABRoomSettingActivity extends ListActivity implements ListItem
 				}
 			}
 			@Override
-	    	public void onFailure(Throwable e) {
+			public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e){
 				if (e.getMessage() != null) {
 					if (e.getMessage().equals("Unauthorized")) {
 						showAlertDialog("@string/error_authentication_failed");
@@ -459,6 +463,7 @@ public class OpenHABRoomSettingActivity extends ListActivity implements ListItem
 //					showAlertDialog("ERROR: Http error, no details");
 				}
 			}
+			
 	    });
 	}
 

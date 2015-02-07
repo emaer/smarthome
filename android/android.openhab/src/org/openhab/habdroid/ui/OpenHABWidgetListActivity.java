@@ -39,6 +39,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.http.Header;
 import org.openhab.habdroid.R;
 import org.openhab.habdroid.model.OpenHABPage;
 import org.openhab.habdroid.model.OpenHABSitemap;
@@ -177,8 +178,8 @@ public class OpenHABWidgetListActivity extends ListActivity {
 	private void init(){
 		
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		openHABUsername = settings.getString("default_openhab_username", null);
-		openHABPassword = settings.getString("default_openhab_password", null);
+		openHABUsername = settings.getString("default_openhab_username", "");
+		openHABPassword = settings.getString("default_openhab_password", "");
 		openHABWidgetDataSource = new OpenHABWidgetDataSource();
 		openHABWidgetAdapter = new OpenHABWidgetAdapter(OpenHABWidgetListActivity.this,
 				R.layout.openhabwidgetlist_genericitem, widgetList);
@@ -264,12 +265,11 @@ public class OpenHABWidgetListActivity extends ListActivity {
 		Log.i(TAG, "showPage for " + pageUrl + " longPolling = " + longPolling);
 		// Cancel any existing http request to openHAB (typically ongoing long poll)
 		if (pageAsyncHttpClient != null) {
-			stopProgressIndicator();
 			pageAsyncHttpClient.cancelRequests(this, true);
 		}
 		pageAsyncHttpClient = new MyAsyncHttpClient();
 		// If authentication is needed
-		pageAsyncHttpClient.setBasicAuthCredientidals(openHABUsername, openHABPassword);
+		pageAsyncHttpClient.setBasicAuth(openHABUsername, openHABPassword);
 		// If long-polling is needed
 		if (longPolling) {
 			// Add corresponding fields to header to make openHAB know we need long-polling
@@ -278,18 +278,35 @@ public class OpenHABWidgetListActivity extends ListActivity {
 			pageAsyncHttpClient.setTimeout(30000);
 		}
 		
-		startProgressIndicator();
-		
 		pageAsyncHttpClient.get(this, pageUrl, new AsyncHttpResponseHandler() {
 			@Override
-			public void onSuccess(String content) {
+			public void onStart() {
+				// TODO Auto-generated method stub
+//				startProgressIndicator();
+				super.onStart();
+			}
+			@Override
+			public void onCancel() {
+				// TODO Auto-generated method stub
+				stopProgressIndicator();
+				super.onCancel();
+			}
+			@Override
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				stopProgressIndicator();
+				super.onFinish();
+			}
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+				// TODO Auto-generated method stub
+				final String content = new String(response);
 				
 				Log.d(TAG, "showPage:" + pageUrl + " success");
-				stopProgressIndicator();
 				processContent(content);
 			}
 			@Override
-		     public void onFailure(Throwable e) {
+			public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e){
 				Log.d(TAG, "showPage:" + pageUrl + " failed");
 				if (e.getMessage() != null) {
 					Log.e(TAG, e.getMessage());
@@ -297,7 +314,6 @@ public class OpenHABWidgetListActivity extends ListActivity {
 						showAlertDialog("@string/error_authentication_failed");
 					}
 				}
-				stopProgressIndicator();
 		     }
 		});
 	}
@@ -438,10 +454,30 @@ public class OpenHABWidgetListActivity extends ListActivity {
 		Log.i(TAG, "Loding sitemap list from " + baseURL + "rest/sitemaps");
 	    AsyncHttpClient asyncHttpClient = new MyAsyncHttpClient();
 		// If authentication is needed
-	    asyncHttpClient.setBasicAuthCredientidals(openHABUsername, openHABPassword);
+	    asyncHttpClient.setBasicAuth(openHABUsername, openHABPassword);
 	    asyncHttpClient.get(baseURL + "rest/sitemaps", new AsyncHttpResponseHandler() {
 			@Override
-			public void onSuccess(String content) {
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				stopProgressIndicator();
+				super.onFinish();
+			}
+			@Override
+			public void onCancel() {
+				// TODO Auto-generated method stub
+				stopProgressIndicator();
+				super.onCancel();
+			}
+			@Override
+			public void onStart() {
+				// TODO Auto-generated method stub
+//				startProgressIndicator();
+				super.onStart();
+			}
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+				// TODO Auto-generated method stub
+				final String content = new String(response);
 				
 				List<OpenHABSitemap> sitemapList = parseSitemapList(content);
 				if (sitemapList.size() == 0) {
@@ -495,7 +531,7 @@ public class OpenHABWidgetListActivity extends ListActivity {
 				}
 			}
 			@Override
-	    	public void onFailure(Throwable e) {
+			public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e){
 				if (e.getMessage() != null) {
 					if (e.getMessage().equals("Unauthorized")) {
 						showAlertDialog("@string/error_authentication_failed");
@@ -507,6 +543,7 @@ public class OpenHABWidgetListActivity extends ListActivity {
 //					showAlertDialog("ERROR: Http error, no details");
 				}
 			}
+			
 	    });
 	}
 

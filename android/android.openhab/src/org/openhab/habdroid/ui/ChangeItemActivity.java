@@ -2,6 +2,7 @@ package org.openhab.habdroid.ui;
 
 import java.util.ArrayList;
 
+import org.apache.http.Header;
 import org.openhab.habdroid.R;
 import org.openhab.habdroid.model.OpenHABWidget;
 import org.openhab.habdroid.util.MyAsyncHttpClient;
@@ -10,12 +11,14 @@ import org.openhab.habdroid.util.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -33,6 +36,9 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 	private String siteUrl;
 	private String itemId;
 	private String newName;
+	
+	private Resources res;
+	private CustomLoadingDlg loadingDlg;
 	
 	private static final String TAG = ChangeItemActivity.class.getName();
 	
@@ -60,6 +66,8 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.change_item_name);
+		
+		res = getResources();
 		
 		Intent i = getIntent();
 		if(null != i){
@@ -164,6 +172,14 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 	
 	private void modifyItemInfo(){
 		
+		if(getCurrentFocus()!=null)  
+        {  
+            ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))  
+            .hideSoftInputFromWindow(getCurrentFocus()  
+                    .getWindowToken(),  
+                    InputMethodManager.HIDE_NOT_ALWAYS);   
+        }  
+		
 		newName = itemname.getText().toString();
 		if(null == newName || newName.length() == 0){
 			Toast.makeText(this, "«Î ‰»Î√˚≥∆", Toast.LENGTH_LONG).show();
@@ -184,7 +200,7 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 		String url = manualUrl + "config";
 		
 		MyAsyncHttpClient asyncHttpClient = new MyAsyncHttpClient();
-		asyncHttpClient.setBasicAuthCredientidals(null, null);
+		asyncHttpClient.setBasicAuth("", "");
 		
 		String pid = "";
 		if(currPos == 0){
@@ -209,15 +225,37 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 		asyncHttpClient.get(url, params,  new AsyncHttpResponseHandler(){
 
 			@Override
-			public void onFailure(Throwable e) {
+			public void onCancel() {
+				// TODO Auto-generated method stub
+				hideLoadingDlg();
+				super.onCancel();
+			}
+
+			@Override
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				hideLoadingDlg();
+				super.onFinish();
+			}
+
+			@Override
+			public void onStart() {
+				// TODO Auto-generated method stub
+				showLoadingDlg(R.string.default_loading_text);
+				super.onStart();
+			}
+
+			@Override
+			public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
 				Log.d(TAG, "request error:" + e.getMessage());
 				Toast.makeText(ChangeItemActivity.this, "error:"
 				+e.getMessage(), Toast.LENGTH_LONG).show();
 			}
 
 			@Override
-			public void onSuccess(final String content) {
+			public void onSuccess(int statusCode, Header[] headers, byte[] response) {
 				// TODO Auto-generated method stub
+				final String content = new String(response);
 				System.out.println("changeresult:" + content);
 				new Handler().postDelayed(new Runnable() {
 					
@@ -234,6 +272,41 @@ public class ChangeItemActivity extends Activity implements OnClickListener{
 			
 		});
 		
+	}
+	
+	protected void showLoadingDlg(int textResId) {
+
+		if (this.isFinishing()) 
+			return;
+
+		String text = res.getString(textResId);
+		
+		if (null == loadingDlg) {
+
+			CustomLoadingDlg.Builder builder = new CustomLoadingDlg.Builder(this);
+			builder.setText(text);
+			loadingDlg = builder.create();
+			loadingDlg.setCancelable(false);
+			loadingDlg.setCanceledOnTouchOutside(false);
+			loadingDlg.startAnim();
+
+		}
+		
+		loadingDlg.setMyText(text);
+		loadingDlg.show();
+	}
+
+	protected void hideLoadingDlg() {
+
+		if (this.isFinishing()) 
+			return;
+
+		if (null != loadingDlg && loadingDlg.isShowing()) {
+
+			loadingDlg.hide();
+			loadingDlg.stopAnim();
+
+		}
 	}
 	
 }

@@ -37,5 +37,6 @@
     <string name="ok">确定</string>
     <string name="goback">返回</string>
     
+    <string name="default_loading_text">处理中……</string>
     
 </resources>

@@ -100,7 +100,7 @@ public class OpenHABWidgetAdapter extends ArrayAdapter<OpenHABWidget> {
 	public static final int TYPE_VIDEO = 12;
 	public static final int TYPE_WEB = 13;
 	public static final int TYPES_COUNT = 14;
-	private String openHABBaseUrl = "http://192.168.18.3:8080/";
+	private String openHABBaseUrl = "";
 	private String openHABUsername;
 	private String openHABPassword;
 	private ArrayList<VideoView> videoWidgetList;
@@ -614,10 +614,23 @@ public class OpenHABWidgetAdapter extends ArrayAdapter<OpenHABWidget> {
     
     private void sendItemCommand(OpenHABItem item, String command) {
 		MyAsyncHttpClient asyncHttpClient = new MyAsyncHttpClient();
-		asyncHttpClient.setBasicAuthCredientidals(openHABUsername, openHABPassword);
+		asyncHttpClient.setBasicAuth(openHABUsername, openHABPassword);
 		try {
 			StringEntity se = new StringEntity(command);
-			asyncHttpClient.post(null, item.getLink(), se, "text/plain", new AsyncHttpResponseHandler());
+			asyncHttpClient.post(null, item.getLink(), se, "text/plain", new AsyncHttpResponseHandler(){
+
+				@Override
+				public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+						Throwable arg3) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+					// TODO Auto-generated method stub
+					
+				}});
 		} catch (UnsupportedEncodingException e) {
 		}
     }
